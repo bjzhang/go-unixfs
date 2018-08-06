@@ -274,7 +274,7 @@ func (db *DagBuilderHelper) GetNextDataNode() (*UnixfsNode, error) {
 // used to keep track of the DAG file size). The size of the data is
 // computed here because after that it will be hidden by `NewLeafNode`
 // inside a generic `ipld.Node` representation.
-func (db *DagBuilderHelper) NewLeafDataNode() (node ipld.Node, dataSize uint64, err error) {
+func (db *DagBuilderHelper) NewLeafDataNode(fsNodeType pb.Data_DataType) (node ipld.Node, dataSize uint64, err error) {
 	fileData, err := db.Next()
 	if err != nil {
 		return nil, 0, err
