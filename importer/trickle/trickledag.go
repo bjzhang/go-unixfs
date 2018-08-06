@@ -37,7 +37,7 @@ const layerRepeat = 4
 // DagBuilderHelper. See the module's description for a more detailed
 // explanation.
 func Layout(db *h.DagBuilderHelper) (ipld.Node, error) {
-	newRoot := db.NewFSNodeOverDag(ft.TFile)
+	newRoot := db.NewFSNodeOverDag(ft.TRaw)
 	root, _, err := fillTrickleRecFSNode(db, newRoot, -1)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func fillTrickleRecFSNode(db *h.DagBuilderHelper, node *h.FSNodeOverDag, maxDept
 				break
 			}
 
-			nextChild := db.NewFSNodeOverDag(ft.TFile)
+			nextChild := db.NewFSNodeOverDag(ft.TRaw)
 			childNode, childFileSize, err := fillTrickleRecFSNode(db, nextChild, depth)
 			if err != nil {
 				return nil, 0, err
