@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	proto "github.com/gogo/protobuf/proto"
+	proto "gx/ipfs/QmdxUuburamoF6zF9qjeQC4WYcWGbWuRmdLacMEsW8ioD8/gogo-protobuf/proto"
 
-	pb "github.com/ipfs/go-unixfs/pb"
+	pb "gx/ipfs/QmagwbbPqiN1oa3SDMZvpTFE5tNuegF1ULtuJvA9EVzsJv/go-unixfs/pb"
 )
 
 func TestFSNode(t *testing.T) {

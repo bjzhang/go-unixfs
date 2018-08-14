@@ -3,12 +3,12 @@
 package importer
 
 import (
-	bal "github.com/ipfs/go-unixfs/importer/balanced"
-	h "github.com/ipfs/go-unixfs/importer/helpers"
-	trickle "github.com/ipfs/go-unixfs/importer/trickle"
+	bal "gx/ipfs/QmagwbbPqiN1oa3SDMZvpTFE5tNuegF1ULtuJvA9EVzsJv/go-unixfs/importer/balanced"
+	h "gx/ipfs/QmagwbbPqiN1oa3SDMZvpTFE5tNuegF1ULtuJvA9EVzsJv/go-unixfs/importer/helpers"
+	trickle "gx/ipfs/QmagwbbPqiN1oa3SDMZvpTFE5tNuegF1ULtuJvA9EVzsJv/go-unixfs/importer/trickle"
 
-	chunker "github.com/ipfs/go-ipfs-chunker"
-	ipld "github.com/ipfs/go-ipld-format"
+	ipld "gx/ipfs/QmUSyMZ8Vt4vTZr5HdDEgEfpwAXfQRuDdfCFTt7XBzhxpQ/go-ipld-format"
+	chunker "gx/ipfs/Qme4ThG6LN6EMrMYyf2AMywAZaGbTYxQu4njfcSSkcisLi/go-ipfs-chunker"
 )
 
 // BuildDagFromReader creates a DAG given a DAGService and a Splitter

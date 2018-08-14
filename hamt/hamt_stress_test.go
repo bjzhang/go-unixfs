@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	mdtest "github.com/ipfs/go-merkledag/test"
-	ft "github.com/ipfs/go-unixfs"
+	mdtest "gx/ipfs/QmYxX4VfVcxmfsj8U6T5kVtFvHsSidy9tmPyPTW5fy7H3q/go-merkledag/test"
+	ft "gx/ipfs/QmagwbbPqiN1oa3SDMZvpTFE5tNuegF1ULtuJvA9EVzsJv/go-unixfs"
 
-	ipld "github.com/ipfs/go-ipld-format"
+	ipld "gx/ipfs/QmUSyMZ8Vt4vTZr5HdDEgEfpwAXfQRuDdfCFTt7XBzhxpQ/go-ipld-format"
 )
 
 func getNames(prefix string, count int) []string {
