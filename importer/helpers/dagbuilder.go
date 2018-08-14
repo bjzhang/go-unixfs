@@ -139,7 +139,7 @@ func (db *DagBuilderHelper) GetDagServ() ipld.DAGService {
 func (db *DagBuilderHelper) NewUnixfsNode() *UnixfsNode {
 	n := &UnixfsNode{
 		node: new(dag.ProtoNode),
-		ufmt: ft.NewFSNode(ft.TRaw),
+		ufmt: ft.NewFSNode(ft.TFile),
 	}
 	n.SetCidBuilder(db.cidBuilder)
 	return n
@@ -205,7 +205,7 @@ func (db *DagBuilderHelper) NewLeafNode(data []byte) (ipld.Node, error) {
 	}
 
 	// Encapsulate the data in UnixFS node (instead of a raw node).
-	fsNodeOverDag := db.NewFSNodeOverDag(ft.TRaw)
+	fsNodeOverDag := db.NewFSNodeOverDag(ft.TFile)
 	fsNodeOverDag.SetFileData(data)
 	node, err := fsNodeOverDag.Commit()
 	if err != nil {
