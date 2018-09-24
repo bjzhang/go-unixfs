@@ -134,21 +134,21 @@ func Append(ctx context.Context, basen ipld.Node, db *h.DagBuilderHelper) (out i
 	}()
 
 	// Convert to unixfs node for working with easily
-	ufsn, err := h.NewUnixfsNodeFromDag(base)
+	fsn, err := db.NewFSNFromDag(base)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get depth of this 'tree'
-	n, layerProgress := trickleDepthInfo(ufsn, db.Maxlinks())
+	n, layerProgress := trickleDepthInfoFSNode(fsn, db.Maxlinks())
 	if n == 0 {
 		// If direct blocks not filled...
-		if err := db.FillNodeLayer(ufsn); err != nil {
+		if err := db.FillFSNodeLayer(fsn); err != nil {
 			return nil, err
 		}
 
 		if db.Done() {
-			return ufsn.GetDagNode()
+			return fsn.GetDagNode()
 		}
 
 		// If continuing, our depth has increased by one
@@ -156,7 +156,7 @@ func Append(ctx context.Context, basen ipld.Node, db *h.DagBuilderHelper) (out i
 	}
 
 	// Last child in this node may not be a full tree, lets file it up
-	if err := appendFillLastChild(ctx, ufsn, n-1, layerProgress, db); err != nil {
+	if err := appendFillLastChild(ctx, fsn, n-1, layerProgress, db); err != nil {
 		return nil, err
 	}
 
@@ -168,31 +168,29 @@ func Append(ctx context.Context, basen ipld.Node, db *h.DagBuilderHelper) (out i
 	// Now, continue filling out tree like normal
 	for i := n; !db.Done(); i++ {
 		for j := 0; j < layerRepeat && !db.Done(); j++ {
-			next := db.NewUnixfsNode()
-			err := fillTrickleRec(db, next, i)
+			next := db.NewFSNodeOverDag(ft.TFile)
+			childNode, childFileSize, err := fillTrickleRecFSNode(db, next, i)
 			if err != nil {
 				return nil, err
 			}
-
-			err = ufsn.AddChild(next, db)
-			if err != nil {
+			if err := fsn.AddChild(childNode, childFileSize, db); err != nil {
 				return nil, err
 			}
 		}
 	}
 
-	return ufsn.GetDagNode()
+	return fsn.GetDagNode()
 }
 
 // appendFillLastChild will take in an incomplete trickledag node (uncomplete meaning, not full) and
 // fill it out to the specified depth with blocks from the given DagBuilderHelper
-func appendFillLastChild(ctx context.Context, ufsn *h.UnixfsNode, depth int, layerFill int, db *h.DagBuilderHelper) error {
-	if ufsn.NumChildren() <= db.Maxlinks() {
+func appendFillLastChild(ctx context.Context, fsn *h.FSNodeOverDag, depth int, layerFill int, db *h.DagBuilderHelper) error {
+	if fsn.NumChildren() <= db.Maxlinks() {
 		return nil
 	}
 	// Recursive step, grab last child
-	last := ufsn.NumChildren() - 1
-	lastChild, err := ufsn.GetChild(ctx, last, db.GetDagServ())
+	last := fsn.NumChildren() - 1
+	lastChild, err := fsn.GetChild(ctx, last, db.GetDagServ())
 	if err != nil {
 		return err
 	}
@@ -204,8 +202,8 @@ func appendFillLastChild(ctx context.Context, ufsn *h.UnixfsNode, depth int, lay
 	}
 
 	// Update changed child in parent node
-	ufsn.RemoveChild(last, db)
-	err = ufsn.AddChild(nchild, db)
+	fsn.RemoveChild(last, db)
+	err = fsn.AddChild(nchild, db)
 	if err != nil {
 		return err
 	}
@@ -219,7 +217,7 @@ func appendFillLastChild(ctx context.Context, ufsn *h.UnixfsNode, depth int, lay
 				return err
 			}
 
-			err = ufsn.AddChild(next, db)
+			err = fsn.AddChild(next, db)
 			if err != nil {
 				return err
 			}
@@ -230,7 +228,7 @@ func appendFillLastChild(ctx context.Context, ufsn *h.UnixfsNode, depth int, lay
 }
 
 // recursive call for Append
-func appendRec(ctx context.Context, ufsn *h.UnixfsNode, db *h.DagBuilderHelper, depth int) (*h.UnixfsNode, error) {
+func appendRec(ctx context.Context, fsn *h.FSNodeOverDag, db *h.DagBuilderHelper, depth int) (*h.FSNodeOverDag, error) {
 	if depth == 0 || db.Done() {
 		return ufsn, nil
 	}
@@ -277,6 +275,15 @@ func appendRec(ctx context.Context, ufsn *h.UnixfsNode, db *h.DagBuilderHelper, 
 }
 
 func trickleDepthInfo(node *h.UnixfsNode, maxlinks int) (int, int) {
+	n := node.NumChildren()
+	if n < maxlinks {
+		return 0, 0
+	}
+
+	return ((n - maxlinks) / layerRepeat) + 1, (n - maxlinks) % layerRepeat
+}
+
+func trickleDepthInfoFSNode(node *h.FSNodeOverDag, maxlinks int) (int, int) {
 	n := node.NumChildren()
 	if n < maxlinks {
 		return 0, 0
