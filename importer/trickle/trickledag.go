@@ -46,37 +46,6 @@ func Layout(db *h.DagBuilderHelper) (ipld.Node, error) {
 	return db.AddNodeAndClose(root)
 }
 
-// fillTrickleRec creates a trickle (sub-)tree with an optional maximum specified depth
-// in the case maxDepth is greater than zero, or with unlimited depth otherwise
-// (where the DAG builder will signal the end of data to end the function).
-func fillTrickleRec(db *h.DagBuilderHelper, node *h.UnixfsNode, maxDepth int) error {
-	// Always do this, even in the base case
-	if err := db.FillNodeLayer(node); err != nil {
-		return err
-	}
-
-	for depth := 1; ; depth++ {
-		// Apply depth limit only if the parameter is set (> 0).
-		if maxDepth > 0 && depth == maxDepth {
-			return nil
-		}
-		for layer := 0; layer < layerRepeat; layer++ {
-			if db.Done() {
-				return nil
-			}
-
-			nextChild := db.NewUnixfsNode()
-			if err := fillTrickleRec(db, nextChild, depth); err != nil {
-				return err
-			}
-
-			if err := node.AddChild(nextChild, db); err != nil {
-				return err
-			}
-		}
-	}
-}
-
 // fillTrickleRecFSNode creates a trickle (sub-)tree with an optional maximum specified depth
 // in the case maxDepth is greater than zero, or with unlimited depth otherwise
 // (where the DAG builder will signal the end of data to end the function).
