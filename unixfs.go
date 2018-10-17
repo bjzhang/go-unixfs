@@ -178,6 +178,18 @@ func FSNodeFromBytes(b []byte) (*FSNode, error) {
 	return n, nil
 }
 
+// FSNodeFromBytesTFileTFile unmarshal a protobuf message onto an FSNode.
+func FSNodeFromBytesTFileTFile(b []byte) (*FSNode, error) {
+	n := new(FSNode)
+	err := proto.Unmarshal(b, &n.format)
+	*n.format.Type = TFile
+	if err != nil {
+		return nil, err
+	}
+
+	return n, nil
+}
+
 // NewFSNode creates a new FSNode structure with the given `dataType`.
 //
 // It initializes the (required) `Type` field (that doesn't have a `Set()`
