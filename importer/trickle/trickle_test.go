@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	mrand "math/rand"
+	"strconv"
 	"testing"
 
 	ft "github.com/ipfs/go-unixfs"
@@ -562,6 +563,7 @@ func testMultipleAppends(t *testing.T, rawLeaves UseRawLeaves) {
 	spl := chunker.SizeSplitterGen(500)
 
 	ctx := context.Background()
+	fmt.Println("should: " + strconv.Itoa(len(should)))
 	for i := 0; i < len(should); i++ {
 
 		nnode, err := Append(ctx, nd, dbp.New(spl(bytes.NewReader(should[i:i+1]))))
@@ -569,6 +571,8 @@ func testMultipleAppends(t *testing.T, rawLeaves UseRawLeaves) {
 			t.Fatal(err)
 		}
 
+		str := strconv.Itoa(i)
+		fmt.Println("loop: " + str)
 		err = VerifyTrickleDagStructure(nnode, VerifyParams{
 			Getter:      ds,
 			Direct:      dbp.Maxlinks,
