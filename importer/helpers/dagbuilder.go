@@ -429,7 +429,7 @@ func (db *DagBuilderHelper) NewFSNFromDag(nd *dag.ProtoNode) (*FSNodeOverDag, er
 
 // NewFSNFromDag reconstructs a FSNodeOverDag node from a given dag node
 func NewFSNFromDag(nd *dag.ProtoNode) (*FSNodeOverDag, error) {
-	mb, err := ft.FSNodeFromBytes(nd.Data())
+	mb, err := ft.FSNodeFromBytesTFile(nd.Data())
 	if err != nil {
 		return nil, err
 	}

@@ -178,8 +178,8 @@ func FSNodeFromBytes(b []byte) (*FSNode, error) {
 	return n, nil
 }
 
-// FSNodeFromBytesTFileTFile unmarshal a protobuf message onto an FSNode.
-func FSNodeFromBytesTFileTFile(b []byte) (*FSNode, error) {
+// FSNodeFromBytesTFile unmarshal a protobuf message onto an FSNode.
+func FSNodeFromBytesTFile(b []byte) (*FSNode, error) {
 	n := new(FSNode)
 	err := proto.Unmarshal(b, &n.format)
 	*n.format.Type = TFile
